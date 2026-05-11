@@ -1,0 +1,20 @@
+FROM python:3.11.1
+
+WORKDIR /app
+ 
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+ 
+COPY . .
+ 
+# Build FAISS index during image build
+
+RUN python ingest.py
+ 
+EXPOSE 8080
+
+EXPOSE 8501
+ 
+CMD sh -c "uvicorn app:app --host 0.0.0.0 --port 8081 & streamlit run streamlit_app.py --server.port 8502 --server.address 0.0.0.0"
+ 
